@@ -20,6 +20,7 @@ def train_cnn_model(train_loader, dataset, num_classes, device):
             loss.backward()
             optimizer.step()
 
+
 def train_rnn_model(train_dataloader, vocab_size, embed_dim, hidden_dim, num_classes, device):
     model = TextClassifier(vocab_size, embed_dim, hidden_dim, num_classes, dropout_prob=0.5).to(device)
     criterion = nn.CrossEntropyLoss()
