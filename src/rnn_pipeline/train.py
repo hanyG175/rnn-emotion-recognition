@@ -1,32 +1,14 @@
 import torch
 import torch.nn as nn
 import torch.optim as optim
-from .rnn import TextClassifier
-from .cnn import SimpleCNN
+from ..rnn_pipeline.models.rnn import TextClassifier
 
-def train_cnn_model(train_loader, dataset, num_classes, device):
-    model = SimpleCNN(num_classes).to(device) # nclasses=len(dataset.label_map)
-    criterion = nn.CrossEntropyLoss()
-    optimizer = optim.Adam(model.parameters(), lr=0.001)
-
-    for epoch in range(16):
-        model.train()
-        for images, labels in train_loader:
-            images, labels = images.to(device), labels.to(device)
-
-            optimizer.zero_grad()
-            outputs = model(images)
-            loss = criterion(outputs, labels)
-            loss.backward()
-            optimizer.step()
-
-
-def train_rnn_model(train_dataloader, vocab_size, embed_dim, hidden_dim, num_classes, device):
+def train_rnn_model(train_dataloader, vocab_size, embed_dim, hidden_dim, num_classes, lr=0.01, num_epochs=10, device="cpu"):
     model = TextClassifier(vocab_size, embed_dim, hidden_dim, num_classes, dropout_prob=0.5).to(device)
     criterion = nn.CrossEntropyLoss()
-    optimizer = optim.Adam(model.parameters(), lr= 0.01)
+    optimizer = optim.Adam(model.parameters(), lr=lr)
 
-    for epoch in range(14):
+    for epoch in range(num_epochs):
         for text, label in train_dataloader:
             text, label = text.to(device), label.to(device)
             optimizer.zero_grad()
@@ -35,6 +17,8 @@ def train_rnn_model(train_dataloader, vocab_size, embed_dim, hidden_dim, num_cla
 
             loss.backward()
             optimizer.step()
+
+    return model
 
 def save_model(model, path):
 

@@ -125,7 +125,6 @@ dmypy.json
 *.pkl
 *.pickle
 *.joblib
-models/
 *.h5
 *.pth
 *.ckpt

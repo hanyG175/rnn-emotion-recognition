@@ -1,6 +1,9 @@
 import pandas as pd
 from sklearn.model_selection import train_test_split
 
+"""
+No need since text data already comes split but in case you need the code:
+"""
 
 df = pd.read_parquet("data/raw/dataset.parquet")
 

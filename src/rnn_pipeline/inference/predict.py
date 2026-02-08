@@ -13,9 +13,10 @@ def predict_emotion(model, tokenizer, text):
     idx_to_label = {
         0: 'sadness',
         1: 'joy',
-        2: 'anger',
-        3: 'fear',
-        4: 'surprise'
+        2: 'love',
+        3: 'anger',
+        4: 'fear',
+        5: 'surprise'
     }
     predicted_emotion = idx_to_label.get(predicted_class_idx, "Unknown")
 
