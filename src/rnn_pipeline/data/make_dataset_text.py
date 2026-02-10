@@ -1,16 +1,59 @@
 import pandas as pd
-from sklearn.model_selection import train_test_split
+from pathlib import Path
+from preprocess_text import TextPreprocessor
 
-"""
-No need since text data already comes split but in case you need the code:
-"""
+def make_dataset(
+    train_path: str,
+    val_path: str,
+    test_path: str,
+    processed_dir: str,
+    artifacts_dir: str,
+    min_freq: int = 2
+):
+    """
+    Load raw data, fit text preprocessor on training set,
+    transform all splits, and save processed datasets + vocab.
+    """
 
-df = pd.read_parquet("data/raw/dataset.parquet")
+    processed_dir = Path(processed_dir)
+    artifacts_dir = Path(artifacts_dir)
 
-train_df, temp_df = train_test_split(df, test_size=0.3, stratify=df["label"])
-val_df, test_df = train_test_split(temp_df, test_size=0.5, stratify=temp_df["label"])
+    processed_dir.mkdir(parents=True, exist_ok=True)
+    artifacts_dir.mkdir(parents=True, exist_ok=True)
 
-train_df.to_parquet("data/processed/train.parquet")
-val_df.to_parquet("data/processed/val.parquet")
-test_df.to_parquet("data/processed/test.parquet")
+    # ------------------
+    # Load raw data
+    # ------------------
+    train_df = pd.read_parquet(train_path)
+    val_df = pd.read_parquet(val_path)
+    test_df = pd.read_parquet(test_path)
 
+    # ------------------
+    # Preprocess
+    # ------------------
+    preprocessor = TextPreprocessor(min_freq=min_freq)
+
+    preprocessed_train_df = preprocessor.fit(train_df).transform(train_df)
+    preprocessor.save(artifacts_dir / "vocab.json")
+
+    preprocessed_val_df = preprocessor.transform(val_df)
+    preprocessed_test_df = preprocessor.transform(test_df)
+
+    # ------------------
+    # Save processed data
+    # ------------------
+    preprocessed_train_df.to_parquet(processed_dir / "train.parquet", index=False)
+    preprocessed_val_df.to_parquet(processed_dir / "val.parquet", index=False)
+    preprocessed_test_df.to_parquet(processed_dir / "test.parquet", index=False)
+
+    print("Dataset creation complete.")
+    
+if __name__ == "__main__":
+    make_dataset(
+        train_path="./data/text/raw/train-00000-of-00001.parquet",
+        val_path="./data/text/raw/validation-00000-of-00001.parquet",
+        test_path="./data/text/raw/test-00000-of-00001.parquet",
+        processed_dir="./data/text/processed",
+        artifacts_dir="./artifacts",
+        min_freq=2
+    )

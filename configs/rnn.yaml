@@ -1,4 +1,25 @@
-vocab_size: len(vocab)
-embed_dim: 100
-hidden_dim: 128
-num_classes: 5
+model:
+  name: rnn
+  embedding_dim: 100
+  hidden_dim: 256
+  rnn_type: lstm        # or rnn / gru for multi options models
+  dropout: 0.5
+
+training:
+  epochs: 14
+  learning_rate: 0.01 
+  batch_size: 64
+  seed: 42
+  scheduler:
+    type: reduce_on_plateau  # reduce_on_plateau | cosine | omit for none
+    patience: 2             # epochs of no improvement before reducing
+    factor: 0.5              # new_lr = old_lr * factor
+    min_lr: 1.0e-6           # LR floor
+
+
+data: # this goes in data workflow
+  max_length: 50
+
+early_stopping:
+  patience: 5
+  min_delta: 0.001
