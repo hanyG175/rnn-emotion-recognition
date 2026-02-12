@@ -1,6 +1,5 @@
 # Trainer class (NEW)
 import json
-from jsonschema import validate
 import torch
 import yaml
 import pandas as pd
@@ -8,12 +7,11 @@ import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader
 from src.rnn_pipeline.training.early_stopping import EarlyStopping
-from torchmetrics import Accuracy
+from torchmetrics.classification import Accuracy # type: ignore
 
 from ..data.datasets import TextDataset
 from ..models.rnn import TextClassifier
 
-# NEW imports — add these to the top of train.py
 from tqdm import tqdm
 from datetime import datetime
 from rnn_pipeline.data.validation import validate_dataframe
@@ -25,7 +23,7 @@ from rnn_pipeline.utils.monitoring import ExperimentTracker
 from rnn_pipeline.utils.seed import set_seed
 from rnn_pipeline.training.schedulers import get_scheduler, scheduler_step
  
-logger = get_logger(__name__)   # NEW — replaces print()
+logger = get_logger(__name__) 
 
 def train_one_epoch(model, train_loader, criterion, optimizer, device):
     model.train()
@@ -64,13 +62,13 @@ def validate(model, val_loader, criterion, num_classes, device):
 
 
 def main():
-    config = load_config("configs/rnn.yaml")          # NEW
-    set_seed(config["training"].get("seed", 42))     # NEW
+    config = load_config("configs/rnn.yaml")      
+    set_seed(config["training"].get("seed", 42))    
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     
     train_df = pd.read_parquet("data/processed/train.parquet")
     val_df   = pd.read_parquet("data/processed/val.parquet")
-    validate_dataframe(train_df, "train")                       # NEW
+    validate_dataframe(train_df, "train")                    
     validate_dataframe(val_df,   "val")   
     
     
@@ -92,12 +90,7 @@ def main():
         max_len=config["data"]["max_len"]
     )
     # -------------------
-    train_loader = DataLoader(
-        train_dataset,
-        batch_size=config["training"]["batch_size"],
-        shuffle=True
-    )
-    
+
     val_loader = DataLoader(
         val_dataset,
         batch_size=config["training"]["batch_size"],
@@ -127,31 +120,30 @@ def main():
 
     best_model_path = "artifacts/best_model.pt"
 
-    run_name = f"run_{datetime.now():%Y%m%d_%H%M%S}"           # NEW
-    tracker  = ExperimentTracker("rnn-text-classification")   # NEW
-    tracker.start_run(run_name=run_name)                            # NEW
-    tracker.log_params(config)                                    # NEW
+    run_name = f"run_{datetime.now():%Y%m%d_%H%M%S}"          
+    tracker  = ExperimentTracker("rnn-text-classification")  
+    tracker.start_run(run_name=run_name)                           
+    tracker.log_params(config)                                         
  
-                      # NEW
- 
-    # NEW — seeded generator for deterministic DataLoader shuffle
     g = torch.Generator(); g.manual_seed(config["training"]["seed"])
     train_loader = DataLoader(train_dataset, batch_size=config["training"]["batch_size"], shuffle=True, generator=g)
  
-    scheduler    = get_scheduler(optimizer, config)                 # NEW
-    metrics_log  = MetricsLogger(f"artifacts/metrics/{run_name}.csv") # NEW
- 
-    for epoch in range(config["training"]["num_epochs"]):
-        train_loss = train_one_epoch(model, train_loader, criterion, optimizer, device)
-        val_loss, val_acc = validate(model, val_loader, criterion, num_classes, device)
-        current_lr = optimizer.param_groups[0]["lr"]         # NEW
-        logger.info(f"Epoch {epoch+1} | loss={train_loss:.4f} | lr={current_lr:.2e}")
-        metrics_log.log({"epoch": epoch+1, "train_loss": train_loss, "val_loss": val_loss, "val_acc": val_acc})  # NEW
-        tracker.log_metrics({"train_loss": train_loss, "val_loss": val_loss, "val_acc": val_acc}, step=epoch) # NEW
-        scheduler_step(scheduler, val_loss)                        # NEW
-        if early_stopper.step(val_loss):
-            save_checkpoint(model, optimizer, epoch,
-                val_loss, val_acc, config, str(best_model_path)) # NEW
- 
-    tracker.end_run()                                              # NEW
-    metrics_log.close()                                            # NEW
+    scheduler    = get_scheduler(optimizer, config)                
+    metrics_log  = MetricsLogger(f"artifacts/metrics/{run_name}.csv")
+    try: 
+        for epoch in range(config["training"]["num_epochs"]):
+            train_loss = train_one_epoch(model, train_loader, criterion, optimizer, device)
+            val_loss, val_acc = validate(model, val_loader, criterion, num_classes, device)
+            current_lr = optimizer.param_groups[0]["lr"]        
+            logger.info(f"Epoch {epoch+1} | loss={train_loss:.4f} |val_loss={val_loss:.4f} | val_acc={val_acc:.4f} | lr={current_lr:.2e}")
+            metrics_log.log({"epoch": epoch+1, "train_loss": train_loss, "val_loss": val_loss, "val_acc": val_acc}) 
+            tracker.log_metrics({"train_loss": train_loss, "val_loss": val_loss, "val_acc": val_acc}, step=epoch)
+            scheduler_step(scheduler, val_loss)                       
+            if early_stopper.step(val_loss):
+                save_checkpoint(model, optimizer, epoch,
+                    val_loss, val_acc, config, str(best_model_path))
+            if early_stopper.should_stop:
+                break
+    finally:
+        tracker.end_run()                                             
+        metrics_log.close()                                           

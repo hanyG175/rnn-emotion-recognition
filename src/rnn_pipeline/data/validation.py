@@ -26,4 +26,4 @@ def validate_dataframe(df: pd.DataFrame, split_name: str = "dataset"):
     counts = df["label"].value_counts()
     ratio  = counts.max() / max(counts.min(), 1)
     if ratio > MAX_IMBALANCE:
-        logger.warning(f"[{split_name}] Imbalance ratio = {ratio:.1f}x")
+        logger.warn(f"[{split_name}] Imbalance ratio = {ratio:.1f}x") # type: ignore

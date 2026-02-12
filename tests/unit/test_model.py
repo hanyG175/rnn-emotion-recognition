@@ -19,11 +19,11 @@ def test_overfit_single_batch(model):
     x, y = torch.randint(0,200,(8,10)), torch.tensor([0,1,2,0,1,2,0,1])
     init_loss = None
     for _ in range(50):
-        loss = criterion(model(x), y)
+        loss = criterion(model(x), y) # type: ignore
         loss.backward()
-        optimizer.step()
+        optimizer.step() # type: ignore
         init_loss = init_loss or loss.item()
-    assert loss.item() < init_loss * 0.5
+    assert loss.item() < init_loss * 0.5 # type: ignore
  
 def test_eval_mode_is_deterministic(model, batch):
     model.eval()

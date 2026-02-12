@@ -1,6 +1,6 @@
 # MLflow/W&B integration (NEW)
 
-import mlflow
+import mlflow # type: ignore
 from pathlib import Path
  
 class ExperimentTracker:
