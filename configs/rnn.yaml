@@ -15,11 +15,10 @@ training:
     patience: 2             # epochs of no improvement before reducing
     factor: 0.5              # new_lr = old_lr * factor
     min_lr: 1.0e-6           # LR floor
-
+  
+  early_stopping:
+    patience: 5
+    min_delta: 0.001
 
 data: # this goes in data workflow
   max_len: 50
-
-early_stopping:
-  patience: 5
-  min_delta: 0.001

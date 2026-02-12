@@ -2,10 +2,11 @@
 import logging, sys
 from logging.handlers import RotatingFileHandler
 from pathlib import Path
+from utils.paths import ARTIFACTS_DIR
  
 def get_logger(
     name: str,
-    log_dir: str = "artifacts/logs",
+    log_dir: str | Path = ARTIFACTS_DIR / "logs",
     level: int = logging.INFO,
 ) -> logging.Logger:
  

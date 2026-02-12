@@ -1,5 +1,6 @@
 import torch
 import pandas as pd
+import numpy as np
 import os
 from PIL import Image
 from torch.utils.data import Dataset
@@ -19,7 +20,7 @@ class TextDataset(Dataset):
 
     # Pad or truncate sequence to fixed length
     if len(seq) < self.max_len:
-      seq = seq + [0] * (self.max_len - len(seq)) # pad with <PAD>=0
+      seq = np.pad(seq, (0, self.max_len - len(seq)), 'constant', constant_values=0) # pad with <PAD>=0
     else:
       seq = seq[:self.max_len]
 

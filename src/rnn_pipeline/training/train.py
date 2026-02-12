@@ -7,13 +7,12 @@ import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader
 from .early_stopping import EarlyStopping
-# from torchmetrics.classification import Accuracy type: ignore
+from torchmetrics.classification import Accuracy
 from data.datasets import TextDataset
 from models.rnn import TextClassifier
-from torchmetrics.classification import Accuracy # type: ignore
+from torchmetrics.classification import Accuracy 
 
-exit(0)
-from tqdm import tqdm # type: ignore
+from tqdm import tqdm
 from datetime import datetime
 from rnn_pipeline.data.validation import validate_dataframe
 from rnn_pipeline.utils.checkpoint import save_checkpoint
@@ -37,11 +36,11 @@ def train_one_epoch(model, train_loader, criterion, optimizer, device):
         output = model(text)
         loss = criterion(output, label)
         loss.backward()
-        # NEW — clip gradient norm to 1.0; prevents RNN exploding gradients
+        # clip gradient norm to 1.0; prevents RNN exploding gradients
         torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
         optimizer.step()
         running_loss += loss.item()
-        loop.set_postfix(loss=f"{loss.item():.4f}")  # NEW
+        loop.set_postfix(loss=f"{loss.item():.4f}")
     return running_loss / len(train_loader)
 
 def validate(model, val_loader, criterion, num_classes, device):
@@ -129,7 +128,7 @@ def main():
     train_loader = DataLoader(train_dataset, batch_size=config["training"]["batch_size"], shuffle=True, generator=g)
  
     scheduler    = get_scheduler(optimizer, config) # create LR scheduler based on config              
-    metrics_log  = MetricsLogger(f"artifacts/metrics/{run_name}.csv") # log metrics to CSV for later analysis
+    metrics_log  = MetricsLogger(f"{ARTIFACTS_DIR}/metrics/{run_name}.csv") # log metrics to CSV for later analysis
     
     try: 
         for epoch in range(config["training"]["num_epochs"]):

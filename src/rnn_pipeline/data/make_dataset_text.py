@@ -1,6 +1,6 @@
 import pandas as pd
 from pathlib import Path
-from preprocess_text import TextPreprocessor
+from .preprocess_text import TextPreprocessor
 
 from utils.paths import PROCESSED_DIR, ARTIFACTS_DIR, RAW_DIR
 from .validation import validate_dataframe
