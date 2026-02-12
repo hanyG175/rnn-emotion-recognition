@@ -1,7 +1,6 @@
 import pandas as pd
 import sys
 
-sys.path.append('src/rnn_pipeline')  # for imports to work when run as script
 
 from utils.logger import get_logger
 logger = get_logger(__name__)

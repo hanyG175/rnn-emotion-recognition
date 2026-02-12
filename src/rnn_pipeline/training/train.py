@@ -6,12 +6,14 @@ import pandas as pd
 import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader
-from src.rnn_pipeline.training.early_stopping import EarlyStopping
-from torchmetrics.classification import Accuracy
-from ..data.datasets import TextDataset
-from ..models.rnn import TextClassifier
+from .early_stopping import EarlyStopping
+# from torchmetrics.classification import Accuracy type: ignore
+from data.datasets import TextDataset
+from models.rnn import TextClassifier
+from torchmetrics.classification import Accuracy # type: ignore
 
-from tqdm import tqdm
+exit(0)
+from tqdm import tqdm # type: ignore
 from datetime import datetime
 from rnn_pipeline.data.validation import validate_dataframe
 from rnn_pipeline.utils.checkpoint import save_checkpoint
@@ -21,7 +23,8 @@ from rnn_pipeline.utils.metric import MetricsLogger
 from rnn_pipeline.utils.monitoring import ExperimentTracker
 from rnn_pipeline.utils.seed import set_seed
 from rnn_pipeline.training.schedulers import get_scheduler, scheduler_step
- 
+from utils.paths import ARTIFACTS_DIR, CHECKPOINTS_DIR, PROCESSED_DIR, VOCAB_PATH, CONFIG_DIR
+
 logger = get_logger(__name__) 
 
 def train_one_epoch(model, train_loader, criterion, optimizer, device):
@@ -62,15 +65,15 @@ def validate(model, val_loader, criterion, num_classes, device):
 
 def main():
     # Setting up reproducibility, device, and loading data
-    config = load_config("configs/rnn.yaml")      
+    config = load_config(CONFIG_DIR / "rnn.yaml")      
     set_seed(config["training"].get("seed", 42))    
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     
-    train_df = pd.read_parquet("data/processed/train.parquet")
-    val_df   = pd.read_parquet("data/processed/val.parquet")
+    train_df = pd.read_parquet(PROCESSED_DIR / "train.parquet")
+    val_df   = pd.read_parquet(PROCESSED_DIR / "val.parquet")
     
     # Load vocab
-    with open("artifacts/vocab.json") as f:
+    with open(VOCAB_PATH) as f:
         vocab = json.load(f)
     vocab_size = len(vocab)
     num_classes = train_df["label"].nunique()
@@ -112,7 +115,7 @@ def main():
     min_delta=config["training"]["early_stopping"]["min_delta"]
 )
 
-    best_model_path = "artifacts/best_model.pt"
+    best_model_path = ARTIFACTS_DIR / "best_model.pt"
 
     #MLflow/W&B integration
     run_name = f"run_{datetime.now():%Y%m%d_%H%M%S}"          
@@ -145,3 +148,7 @@ def main():
     finally:
         tracker.end_run()                                             
         metrics_log.close()                                           
+        
+        
+if __name__ == "__main__":
+    main()

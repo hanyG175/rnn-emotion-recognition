@@ -2,25 +2,22 @@ import pandas as pd
 from pathlib import Path
 from preprocess_text import TextPreprocessor
 
-
-from validation import validate_dataframe
+from utils.paths import PROCESSED_DIR, ARTIFACTS_DIR, RAW_DIR
+from .validation import validate_dataframe
 
 
 def make_dataset(
-    train_path: str,
-    val_path: str,
-    test_path: str,
-    processed_dir: str,
-    artifacts_dir: str,
+    train_path: Path | str,
+    val_path: Path | str,
+    test_path: Path | str,
+    processed_dir: Path,
+    artifacts_dir: Path,
     min_freq: int = 2
 ):
     """
     Load raw data, fit text preprocessor on training set,
     transform all splits, and save processed datasets + vocab.
     """
-
-    processed_dir = Path(processed_dir)
-    artifacts_dir = Path(artifacts_dir)
 
     processed_dir.mkdir(parents=True, exist_ok=True)
     artifacts_dir.mkdir(parents=True, exist_ok=True)
@@ -57,10 +54,10 @@ def make_dataset(
     
 if __name__ == "__main__":
     make_dataset(
-        train_path="./data/text/raw/train-00000-of-00001.parquet",
-        val_path="./data/text/raw/validation-00000-of-00001.parquet",
-        test_path="./data/text/raw/test-00000-of-00001.parquet",
-        processed_dir="./data/text/processed",
-        artifacts_dir="./artifacts",
+        train_path=RAW_DIR / "train-00000-of-00001.parquet",
+        val_path=RAW_DIR / "validation-00000-of-00001.parquet",
+        test_path=RAW_DIR / "test-00000-of-00001.parquet",
+        processed_dir=PROCESSED_DIR,
+        artifacts_dir=ARTIFACTS_DIR,
         min_freq=2
     )

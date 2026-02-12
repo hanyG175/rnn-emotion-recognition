@@ -1,4 +1,5 @@
 import json
+from pathlib import Path
 from typing import List, Dict
 from collections import Counter
 import nltk
@@ -92,11 +93,11 @@ class TextPreprocessor:
     # SERIALIZATION
     # ------------------
 
-    def save(self, path: str):
+    def save(self, path: Path | str):
         with open(path, "w") as f:
             json.dump(self.vocab, f)
 
-    def load(self, path: str):
+    def load(self, path: Path | str):
         with open(path) as f:
             self.vocab = json.load(f)
         self._setup()

@@ -10,7 +10,7 @@ REQUIRED_KEYS = {
     "training": {"batch_size", "num_epochs", "learning_rate"},
 }
  
-def load_config(config_path: str = "configs/rnn.yaml") -> dict:
+def load_config(config_path: Path | str) -> dict:
     path = Path(config_path)
  
     # Guard 1: file must exist

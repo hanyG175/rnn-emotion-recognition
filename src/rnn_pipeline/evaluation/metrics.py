@@ -1,6 +1,6 @@
  # Custom metrics
 import torch
-from torchmetrics import Accuracy, F1Score
+from torchmetrics.classification import Accuracy, F1Score
 
 def calculate_metrics(model, dataloader, device="cpu"):
     model.to(device)

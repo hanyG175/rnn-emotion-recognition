@@ -2,8 +2,8 @@ import torch
 import pandas as pd
 import json
 from torch.utils.data import DataLoader
-from ..data.datasets import TextDataset
-from ..models.rnn import TextClassifier
+from data.datasets import TextDataset
+from models.rnn import TextClassifier
 from .metrics import calculate_metrics
 
 def evaluate_model(model_path, data_path, vocab_path, config):
