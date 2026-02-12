@@ -6,7 +6,7 @@ model:
   dropout: 0.5
 
 training:
-  epochs: 14
+  num_epochs: 14
   learning_rate: 0.01 
   batch_size: 64
   seed: 42
@@ -18,7 +18,7 @@ training:
 
 
 data: # this goes in data workflow
-  max_length: 50
+  max_len: 50
 
 early_stopping:
   patience: 5

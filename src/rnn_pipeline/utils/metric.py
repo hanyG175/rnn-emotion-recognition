@@ -21,3 +21,5 @@ class MetricsLogger:
  
     def close(self) -> None:
         self._file.close()
+
+print(MetricsLogger().log({"epoch": 1, "val_loss": 0.5, "val_acc": 0.8}))

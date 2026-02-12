@@ -1,4 +1,4 @@
-# Save/load checkpoints (NEW)
+# Save/load checkpoints
 import torch
 from datetime import datetime
 from pathlib import Path
@@ -7,9 +7,9 @@ def save_checkpoint(model, optimizer, epoch, val_loss,
                       val_acc, config, path: str) -> None:
     checkpoint = {
         "epoch":                epoch,
-        "model_state_dict":     model.state_dict(),
+        "model_state_dict":     model.state_dict() if model else None,
         # optimizer_state_dict stores momentum buffers — required to resume
-        "optimizer_state_dict": optimizer.state_dict(),
+        "optimizer_state_dict": optimizer.state_dict() if optimizer else None,
         "val_loss":             val_loss,
         "val_acc":              val_acc,
         # embed config in checkpoint — file is self-documenting

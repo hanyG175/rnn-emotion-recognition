@@ -1,4 +1,4 @@
-# MLflow/W&B integration (NEW)
+# MLflow/W&B integration
 
 import mlflow # type: ignore
 from pathlib import Path

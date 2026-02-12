@@ -7,8 +7,7 @@ import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader
 from src.rnn_pipeline.training.early_stopping import EarlyStopping
-from torchmetrics.classification import Accuracy # type: ignore
-
+from torchmetrics.classification import Accuracy
 from ..data.datasets import TextDataset
 from ..models.rnn import TextClassifier
 
@@ -62,20 +61,17 @@ def validate(model, val_loader, criterion, num_classes, device):
 
 
 def main():
+    # Setting up reproducibility, device, and loading data
     config = load_config("configs/rnn.yaml")      
     set_seed(config["training"].get("seed", 42))    
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     
     train_df = pd.read_parquet("data/processed/train.parquet")
     val_df   = pd.read_parquet("data/processed/val.parquet")
-    validate_dataframe(train_df, "train")                    
-    validate_dataframe(val_df,   "val")   
-    
     
     # Load vocab
     with open("artifacts/vocab.json") as f:
         vocab = json.load(f)
-        
     vocab_size = len(vocab)
     num_classes = train_df["label"].nunique()
     
@@ -84,13 +80,11 @@ def main():
         train_df,
         max_len=config["data"]["max_len"]
     )
-
     val_dataset = TextDataset(
         val_df,
         max_len=config["data"]["max_len"]
     )
-    # -------------------
-
+    # -----------------------------------
     val_loader = DataLoader(
         val_dataset,
         batch_size=config["training"]["batch_size"],
@@ -120,16 +114,20 @@ def main():
 
     best_model_path = "artifacts/best_model.pt"
 
+    #MLflow/W&B integration
     run_name = f"run_{datetime.now():%Y%m%d_%H%M%S}"          
     tracker  = ExperimentTracker("rnn-text-classification")  
     tracker.start_run(run_name=run_name)                           
     tracker.log_params(config)                                         
- 
-    g = torch.Generator(); g.manual_seed(config["training"]["seed"])
+    
+    # Set generator for reproducible 'shuffling' in DataLoader because shuffle=True uses a random seed internally. This ensures the same shuffling order across runs with the same seed.
+    g = torch.Generator(); 
+    g.manual_seed(config["training"]["seed"])
     train_loader = DataLoader(train_dataset, batch_size=config["training"]["batch_size"], shuffle=True, generator=g)
  
-    scheduler    = get_scheduler(optimizer, config)                
-    metrics_log  = MetricsLogger(f"artifacts/metrics/{run_name}.csv")
+    scheduler    = get_scheduler(optimizer, config) # create LR scheduler based on config              
+    metrics_log  = MetricsLogger(f"artifacts/metrics/{run_name}.csv") # log metrics to CSV for later analysis
+    
     try: 
         for epoch in range(config["training"]["num_epochs"]):
             train_loss = train_one_epoch(model, train_loader, criterion, optimizer, device)

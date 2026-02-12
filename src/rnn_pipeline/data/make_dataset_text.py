@@ -2,6 +2,10 @@ import pandas as pd
 from pathlib import Path
 from preprocess_text import TextPreprocessor
 
+
+from validation import validate_dataframe
+
+
 def make_dataset(
     train_path: str,
     val_path: str,
@@ -28,6 +32,9 @@ def make_dataset(
     val_df = pd.read_parquet(val_path)
     test_df = pd.read_parquet(test_path)
 
+    validate_dataframe(train_df, "train")
+    validate_dataframe(val_df, "val")
+    validate_dataframe(test_df, "test")
     # ------------------
     # Preprocess
     # ------------------
