@@ -2,7 +2,7 @@
 
 from src.rnn_pipeline.data.datasets import TextDataset
 from src.rnn_pipeline.models.rnn import TextClassifier
-from src.rnn_pipeline.training.trainer import train_one_epoch, validate
+from src.rnn_pipeline.training.train import train_one_epoch, validate
 from src.rnn_pipeline.training.early_stopping import EarlyStopping
 from torch.utils.data import DataLoader
 import torch
