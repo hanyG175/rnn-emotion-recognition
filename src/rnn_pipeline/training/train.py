@@ -7,7 +7,7 @@ import torch.optim as optim
 from data.datasets import TextDataset
 from models.rnn import TextClassifier
 from torch.utils.data import DataLoader
-from early_stopping import EarlyStopping
+from training.early_stopping import EarlyStopping
 from torchmetrics.classification import Accuracy
 
 from tqdm import tqdm
@@ -18,7 +18,7 @@ from utils.logger import get_logger
 from utils.metric import MetricsLogger
 from utils.monitoring import ExperimentTracker
 from utils.seed import set_seed
-from schedulers import get_scheduler, scheduler_step
+from training.schedulers import get_scheduler, scheduler_step
 from utils.paths import ARTIFACTS_DIR, PROCESSED_DIR, VOCAB_PATH, CONFIG_DIR
 
 logger = get_logger(__name__) 
