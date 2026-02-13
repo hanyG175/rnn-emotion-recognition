@@ -1,28 +1,25 @@
 # Trainer class (NEW)
 import json
 import torch
-import yaml
 import pandas as pd
 import torch.nn as nn
 import torch.optim as optim
-from torch.utils.data import DataLoader
-from .early_stopping import EarlyStopping
-from torchmetrics.classification import Accuracy
 from data.datasets import TextDataset
 from models.rnn import TextClassifier
-from torchmetrics.classification import Accuracy 
+from torch.utils.data import DataLoader
+from early_stopping import EarlyStopping
+from torchmetrics.classification import Accuracy
 
 from tqdm import tqdm
 from datetime import datetime
-from rnn_pipeline.data.validation import validate_dataframe
-from rnn_pipeline.utils.checkpoint import save_checkpoint
-from rnn_pipeline.utils.config import load_config
-from rnn_pipeline.utils.logger import get_logger
-from rnn_pipeline.utils.metric import MetricsLogger
-from rnn_pipeline.utils.monitoring import ExperimentTracker
-from rnn_pipeline.utils.seed import set_seed
-from rnn_pipeline.training.schedulers import get_scheduler, scheduler_step
-from utils.paths import ARTIFACTS_DIR, CHECKPOINTS_DIR, PROCESSED_DIR, VOCAB_PATH, CONFIG_DIR
+from utils.checkpoint import save_checkpoint
+from utils.config import load_config
+from utils.logger import get_logger
+from utils.metric import MetricsLogger
+from utils.monitoring import ExperimentTracker
+from utils.seed import set_seed
+from schedulers import get_scheduler, scheduler_step
+from utils.paths import ARTIFACTS_DIR, PROCESSED_DIR, VOCAB_PATH, CONFIG_DIR
 
 logger = get_logger(__name__) 
 

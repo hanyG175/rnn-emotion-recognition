@@ -1,17 +1,17 @@
-.PHONY: train test lint
+.PHONY: train data test lint
 
-   data:
-        python src.rnn_pipeline.data.make_dataset.py
+data:
+	python -m data.make_dataset_text.py
 
-   train:
-        python -m src.rnn_pipeline.training.train
-   
-   test:
-        pytest tests/ -v
-   
-   lint:
-        black src/ tests/
-        isort src/ tests/
+train:
+	python -m src.rnn_pipeline.training.train
+
+test:
+	pytest tests/ -v
+
+lint:
+	black src/ tests/
+	isort src/ tests/
 
 
 

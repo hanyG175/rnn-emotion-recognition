@@ -1,1 +1,5 @@
-# emotion-recognition-mlops
+# Emotion Recognition Models:
+
+# RNN Model:
+
+
