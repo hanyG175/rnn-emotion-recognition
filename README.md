@@ -29,21 +29,29 @@ This project implements and compares recurrent architectures for sequence modeli
 
 The repository follows a production-style ML structure with strict separation of concerns:
 ```
-rnn_project/
+rnn-emotion-recognition/
 │
 ├── data/
 │   ├── raw/              ## Downloaded dataset (cached locally)
 │   └── processed/        ## Tokenized & numericalized splits
 │
+├── configs/              ## Model parameters in yaml format
+│
 ├── artifacts/            ## Saved vocabulary, models, metrics
 │
 ├── src/
+│   ├── api/
 │   └── rnn_pipeline/
 │       ├── data/         ## Download, validation, preprocessing
 │       ├── models/       ## RNN/LSTM/GRU model definitions
 │       ├── training/     ## Training loop, early stopping, scheduler
 │       ├── evaluation/   ## Metrics & inference pipeline
 │       └── utils/        ## Centralized path management
+│
+│
+├── docker/               ## Docker files for reproducibility
+│
+├── tests/
 │
 ├── Makefile              ## Reproducible CLI entry points
 └── README.md
