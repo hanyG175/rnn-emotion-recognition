@@ -186,5 +186,7 @@ The architecture is intentionally structured to scale toward:
 - Transformer baseline comparison
 - Unit tests for pipeline components
 
+## CNN-Based Emotion Classification Project Soon...
+
 ## 📜 License
 MIT License
