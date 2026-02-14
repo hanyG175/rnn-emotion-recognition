@@ -29,7 +29,7 @@ This project implements and compares recurrent architectures for sequence modeli
 
 The repository follows a production-style ML structure with strict separation of concerns:
 ```
-emotion-recognition-mlops/
+rnn-emotion-recognition/
 │
 ├── data/
 │   ├── raw/              ## Downloaded dataset (cached locally)
