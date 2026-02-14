@@ -1,6 +1,6 @@
 import pandas as pd
 from pathlib import Path
-from preprocess_text import TextPreprocessor
+from data.preprocess_text import TextPreprocessor
 from data.download import download_emotion_dataset
 
 from utils.paths import PROCESSED_DIR, ARTIFACTS_DIR, RAW_DIR

@@ -1,0 +1,20 @@
+version: "3.9"
+
+services:
+  rnn-trainer:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    container_name: rnn_emotion_training
+
+    volumes:
+      - ./data/text:/app/data
+      - ./artifacts:/app/artifacts
+      - ./configs:/app/configs
+
+    environment:
+      - PYTHONUNBUFFERED=1
+
+    command: python -m emotion_classifier.rnn.train
+
+    restart: "no"

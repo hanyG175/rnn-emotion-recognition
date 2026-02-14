@@ -1,7 +1,7 @@
 .PHONY: train data test lint
 
 data:
-	python -m data/make_dataset_text
+	python -m src.rnn_pipeline.data.make_dataset_text
 
 train:
 	python -m src.rnn_pipeline.training.train
