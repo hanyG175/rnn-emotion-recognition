@@ -1,10 +1,10 @@
 import pandas as pd
 from pathlib import Path
-from data.preprocess_text import TextPreprocessor
-from data.download import download_emotion_dataset
+from .preprocess_text import TextPreprocessor
+from .download import download_emotion_dataset
 
-from utils.paths import PROCESSED_DIR, ARTIFACTS_DIR, RAW_DIR
-from data.validation import validate_dataframe
+from ..utils.paths import PROCESSED_DIR, ARTIFACTS_DIR, RAW_DIR
+from .validation import validate_dataframe
 
 
 def make_dataset(min_freq: int = 2

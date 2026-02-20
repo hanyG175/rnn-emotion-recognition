@@ -3,25 +3,25 @@ import sys
 from pathlib import Path
 
 import pandas as pd
-import torch
+# import torch
 from torch.utils.data import DataLoader
 from sklearn.metrics import classification_report
-
-from data.datasets import TextDataset
-from models.rnn import TextClassifier
-from evaluation.metrics import calculate_metrics
-from utils.checkpoint import load_checkpoint
-from utils.config import load_config
-from utils.logger import get_logger
-from utils.paths import ARTIFACTS_DIR, PROCESSED_DIR, CONFIG_DIR
+from .confusion_matrix import plot_confusion_matrix
+from ..data.datasets import TextDataset
+from ..models.rnn import TextClassifier
+from .metrics import calculate_metrics
+from ..utils.checkpoint import load_checkpoint
+from ..utils.config import load_config
+from ..utils.logger import get_logger
+from ..utils.paths import ARTIFACTS_DIR, PROCESSED_DIR, CONFIG_DIR
 
 logger = get_logger(__name__)
 
 
-def evaluate_model(model, dataloader, device):
+def evaluate_model(model, dataloader, num_classes, device):
     model.eval()
     with torch.no_grad():
-        metrics = calculate_metrics(model, dataloader, device)
+        metrics = calculate_metrics(model, dataloader, num_classes, device)
     return metrics
 
 
@@ -60,7 +60,7 @@ def main():
 
     test_loader = DataLoader(
         test_dataset,
-        batch_size=config["evaluation"]["batch_size"],
+        batch_size=config["training"]["batch_size"],
         shuffle=False,
         num_workers=2
     )
@@ -79,7 +79,7 @@ def main():
     logger.info(f"Loaded checkpoint from epoch {ckpt['epoch']}")
 
     # Run evaluation
-    results = evaluate_model(model, test_loader, device)
+    results = evaluate_model(model, test_loader,num_classes, device)
 
     # Log metrics
     logger.info("=" * 60)
@@ -91,15 +91,26 @@ def main():
     report = classification_report(
         results["all_labels"],
         results["all_preds"],
+        zero_division=0,
         digits=4
     )
     print(report)
+   
 
+    labels = list(range(num_classes))
+
+    cm_image_path = ARTIFACTS_DIR / "confusion_matrix.png"
+    cm = plot_confusion_matrix(
+        results["all_labels"],
+        results["all_preds"],
+        labels=labels,
+        save_path=cm_image_path
+    )
+    
     # Save results
     cm_path = ARTIFACTS_DIR / "confusion_matrix.txt"
     with open(cm_path, "w") as f:
         f.write("Confusion Matrix:\n")
-        f.write(str(results["confusion_matrix"]))
         f.write("\n\nClassification Report:\n")
         f.write(report)
 

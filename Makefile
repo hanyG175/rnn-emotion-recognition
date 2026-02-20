@@ -6,6 +6,9 @@ data:
 train:
 	python -m src.rnn_pipeline.training.train
 
+evaluate:
+	python -m src.rnn_pipeline.evaluation.evaluate
+
 test:
 	pytest tests/ -v
 
