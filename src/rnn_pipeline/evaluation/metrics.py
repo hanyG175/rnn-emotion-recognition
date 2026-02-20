@@ -21,5 +21,7 @@ def calculate_metrics(model, dataloader, device="cpu"):
     metrics = {
         "accuracy": acc.compute().item(),
         "f1": f1.compute().item(),
+        "predictions": all_preds,
+        "labels": all_labels
     }
     return metrics
